@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khwan Dance — Wave Pongruengkiat</title>
+<meta name="description" content="Thai classical dance meets motion capture. Kinect tracking transforms Pichet Klunchun's No.60 methodology into generative visuals.">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">Wave P.</a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+    <div class="nav-links">
+      <a href="../index.html" class="active">Work</a>
+      <a href="../about.html">About</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PROJECT HERO -->
+<section class="project-hero">
+  <div class="container">
+    <a href="../index.html" class="back-link">&larr; All projects</a>
+    <div class="project-tag" style="color: var(--pink);">Performance &amp; Installation</div>
+    <h1 class="gradient-text">Khwan Dance</h1>
+    <p class="project-intro">
+      A collaboration with Padung from Pichet Klunchun Dance Company,
+      exploring Thai classical dance through the lens of No.60 methodology &mdash;
+      decoding traditional movement into generative principles.
+    </p>
+    <div class="project-meta-bar">
+      <div class="project-meta-item">
+        <div class="meta-label">Collaboration</div>
+        <div class="meta-value">Pichet Klunchun Dance Company</div>
+      </div>
+      <div class="project-meta-item">
+        <div class="meta-label">Shown at</div>
+        <div class="meta-value">Asia Culture Center, Korea</div>
+      </div>
+      <div class="project-meta-item">
+        <div class="meta-label">Tech</div>
+        <div class="meta-value">Kinect, TouchDesigner, CHOPs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HERO IMAGE -->
+<div class="container">
+  <div class="project-visual-hero">
+    <div class="placeholder-content">
+      <div class="icon">&#x1F3AD;</div>
+      <div class="label">Project image coming soon</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT BODY -->
+<section class="section">
+  <div class="container">
+    <div class="project-body">
+
+      <h2>The Four Principles</h2>
+      <p>
+        Pichet Klunchun's <strong>No.60 methodology</strong> decodes Thai classical dance
+        into fundamental movement principles. Khwan Dance translates these principles
+        into a computational system that responds to the dancer in real-time.
+      </p>
+      <ul>
+        <li><strong>Focal Points</strong> &mdash; Where the body directs attention. Tracked via skeleton joint analysis.</li>
+        <li><strong>Focused Energies</strong> &mdash; Energy circulates, never accumulates. Mapped through movement velocity and acceleration.</li>
+        <li><strong>Lines Becoming Curves</strong> &mdash; Straight lines dissolve into curves. Tracked via joint trajectory trails.</li>
+        <li><strong>Awareness / Consciousness</strong> &mdash; Sustained presence throughout movement. Detected through consistency and smoothness filters.</li>
+      </ul>
+
+      <h2>Technical System</h2>
+      <p>
+        Kinect body tracking captures the dancer's skeleton in real-time.
+        The four principles are mapped to CHOPs (Channel Operators) in TouchDesigner,
+        where each principle generates a distinct visual layer that responds
+        to the dancer's movement quality.
+      </p>
+
+      <div class="project-tech-grid">
+        <div class="project-tech-card">
+          <h4>Kinect Tracking</h4>
+          <p>Full body skeleton capture. Joint positions, velocities, accelerations.</p>
+        </div>
+        <div class="project-tech-card">
+          <h4>TouchDesigner CHOPs</h4>
+          <p>Each principle mapped to channel operators. Real-time analysis pipeline.</p>
+        </div>
+        <div class="project-tech-card">
+          <h4>Generative Visuals</h4>
+          <p>Four visual layers responding to four principles. The dance creates the visuals.</p>
+        </div>
+        <div class="project-tech-card">
+          <h4>Live Performance</h4>
+          <p>Designed for live touring. Robust enough for stage conditions.</p>
+        </div>
+      </div>
+
+      <h2>International Tour</h2>
+      <p>
+        Khwan Dance toured with the <strong>Asia Culture Center in Gwangju, Korea</strong>,
+        bringing Thai classical dance tradition into dialogue with contemporary
+        interactive technology on an international stage.
+      </p>
+      <p>
+        The project demonstrates that traditional art forms and cutting-edge
+        technology aren't in opposition &mdash; they can amplify each other.
+        The dancer's centuries-old technique becomes more visible, not less,
+        when translated into light and motion.
+      </p>
+    </div>
+
+    <!-- Gallery placeholders -->
+    <div class="project-gallery">
+      <div class="project-gallery-item">Performance photo 1</div>
+      <div class="project-gallery-item">Performance photo 2</div>
+      <div class="project-gallery-item">System diagram</div>
+      <div class="project-gallery-item">Korea ACC venue</div>
+    </div>
+
+    <!-- Prev/Next -->
+    <div class="project-nav">
+      <a href="ceing.html">
+        <div class="nav-label">Previous</div>
+        <div class="nav-title">&larr; CEING Experiment</div>
+      </a>
+      <a href="kong.html" class="next">
+        <div class="nav-label">Next project</div>
+        <div class="nav-title">Kong Interactive &rarr;</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <p>Wave Pongruengkiat &middot; Chiang Mai, Thailand &middot; 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>

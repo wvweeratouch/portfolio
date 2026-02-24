@@ -51,28 +51,24 @@
 
     <div class="archive-error" id="archive-error" style="display:none;">
       <p id="archive-error-msg">Could not load projects.</p>
-      <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">
+      <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
         If viewing locally, this page needs a web server.<br>
-        Push to GitHub Pages or run: <code style="color:var(--accent)">python -m http.server</code>
+        Push to GitHub Pages or run: <code style="color:var(--text)">python -m http.server</code>
       </p>
       <a href="#" onclick="location.reload(); return false;" class="archive-retry">Retry &rarr;</a>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-banner">
-  <div class="container">
-    <h2 class="gradient-text">Let's make something together</h2>
-    <p>Start with a conversation. No commitment, just curiosity.</p>
-    <a href="contact.html" class="cta-btn">Get in touch &rarr;</a>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="container">
-    <p>Wave Pongruengkiat &middot; Chiang Mai, Thailand &middot; 2026</p>
+  <div class="container footer-inner">
+    <p>&copy; 2026 Wave Pongruengkiat</p>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://github.com/wvweeratouch">GitHub</a>
+    </div>
   </div>
 </footer>
 
@@ -198,7 +194,7 @@
 
     var badge = '';
     if (project.type) {
-      badge = '<span class="archive-card-badge" style="background:' + accent + '20;color:' + accent + '">' +
+      badge = '<span class="archive-card-badge" style="background:' + accent + '15;color:' + accent + '">' +
               escHtml(project.type) + '</span>';
     }
 
@@ -242,7 +238,6 @@
 
         var headers = rows[0];
 
-        // Map columns by actual sheet headers
         var colYear     = findCol(headers, ['year']);
         var colTitle    = findCol(headers, ['title', 'project name', 'name']);
         var colVenue    = findCol(headers, ['platform', 'event', 'festival', 'venue']);
@@ -251,7 +246,7 @@
         var colType     = findCol(headers, ['type of work', 'type']);
         var colImage    = findCol(headers, ['image url', 'image', 'thumbnail']);
 
-        if (colTitle === -1) colTitle = 4; // fallback: Title is typically col 4
+        if (colTitle === -1) colTitle = 4;
 
         var projects = [];
         var categories = {};
@@ -279,21 +274,17 @@
           if (country) countries[country.trim()] = true;
         }
 
-        // Sort newest first
         projects.sort(function(a, b) {
           return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
         });
 
-        // Subtitle
         var countryCount = Object.keys(countries).length;
         subtitle.textContent = projects.length + ' projects' +
           (countryCount > 0 ? ' across ' + countryCount + ' countries' : '');
 
-        // Filter tabs
         var sortedCats = Object.keys(categories).sort(function(a, b) {
           return categories[b] - categories[a];
         });
-        // Update "All" tab count
         filtersInner.querySelector('.filter-tab').textContent = 'All (' + projects.length + ')';
 
         for (var c = 0; c < sortedCats.length; c++) {
@@ -304,13 +295,11 @@
           filtersInner.appendChild(btn);
         }
 
-        // Render
         loading.style.display = 'none';
         var html = '';
         for (var j = 0; j < projects.length; j++) html += renderCard(projects[j]);
         grid.innerHTML = html;
 
-        // Filter handler
         filtersInner.addEventListener('click', function(e) {
           if (!e.target.classList.contains('filter-tab')) return;
           var filter = e.target.getAttribute('data-filter');

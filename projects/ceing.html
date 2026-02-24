@@ -54,15 +54,29 @@
   </div>
 </section>
 
-<!-- HERO IMAGE -->
+<!-- LIVE DEMO -->
 <div class="container">
-  <div class="project-visual-hero">
-    <div class="placeholder-content">
-      <div class="icon">&#x1F9EC;</div>
-      <div class="label">Project image coming soon</div>
+  <div class="demo-container" id="demo-container">
+    <div class="demo-launcher" id="demo-launcher" onclick="launchDemo()">
+      <div class="demo-launcher-icon">&#9654;</div>
+      <div class="demo-launcher-text">Launch Live Demo</div>
+      <div class="demo-launcher-sub">Requires camera access &middot; Works best on desktop</div>
     </div>
   </div>
+  <a href="https://wvweeratouch.github.io/ceing-experiment/" target="_blank" class="demo-fullscreen-link">Open fullscreen &rarr;</a>
 </div>
+<script>
+function launchDemo() {
+  var container = document.getElementById('demo-container');
+  var launcher = document.getElementById('demo-launcher');
+  launcher.style.display = 'none';
+  var iframe = document.createElement('iframe');
+  iframe.src = 'https://wvweeratouch.github.io/ceing-experiment/';
+  iframe.className = 'demo-iframe';
+  iframe.allow = 'camera; microphone';
+  container.appendChild(iframe);
+}
+</script>
 
 <!-- PROJECT BODY -->
 <section class="section">

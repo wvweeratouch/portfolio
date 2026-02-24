@@ -126,6 +126,7 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: 16px; overflow: hidden;
   transition: border-color 0.3s, transform 0.3s;
   text-decoration: none; color: inherit; display: block;
+  position: relative;
 }
 .project-card:hover {
   border-color: var(--accent); transform: translateY(-4px);
@@ -144,6 +145,55 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 12px 16px;
   background: linear-gradient(transparent, rgba(0,0,0,0.7));
   font-size: 11px; color: var(--text-dim); text-align: right;
+}
+
+/* --- Gradient visual backgrounds per project --- */
+.project-card-gradient {
+  aspect-ratio: 16/10; position: relative; overflow: hidden;
+}
+.project-card-gradient::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--surface) 0%, transparent 50%);
+}
+.gradient-ceing {
+  background: linear-gradient(135deg, #0a1628 0%, #0d2847 30%, #22d3ee 100%);
+}
+.gradient-khwan {
+  background: linear-gradient(135deg, #1a0a1e 0%, #2d1035 30%, #f472b6 100%);
+}
+.gradient-kong {
+  background: linear-gradient(135deg, #1a1008 0%, #2d1d0a 30%, #fb923c 100%);
+}
+.gradient-zer0ne {
+  background: linear-gradient(135deg, #0f0a1e 0%, #1a1035 30%, #a78bfa 100%);
+}
+.gradient-datamask {
+  background: linear-gradient(135deg, #0a1428 0%, #0d2040 30%, #60a5fa 100%);
+}
+.gradient-techbio {
+  background: linear-gradient(135deg, #0a1a10 0%, #0d2d18 30%, #4ade80 100%);
+}
+
+/* --- Featured card (CEING) --- */
+.project-card-featured { border-color: rgba(34, 211, 238, 0.3); }
+.project-card-featured:hover { border-color: var(--cyan); }
+.featured-badge {
+  position: absolute; top: 16px; right: 16px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  background: rgba(34, 211, 238, 0.15);
+  backdrop-filter: blur(8px);
+  font-size: 11px; font-weight: 600; color: var(--cyan);
+  letter-spacing: 0.5px;
+}
+.featured-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 .project-card-body { padding: 20px; }
 .project-card-meta {
@@ -379,6 +429,68 @@ img { max-width: 100%; height: auto; display: block; }
 .project-nav .nav-title { font-size: 16px; font-weight: 600; }
 .project-nav .next { text-align: right; }
 
+/* ===== DEMO IFRAME (CEING project page) ===== */
+.demo-container {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; aspect-ratio: 16/9; overflow: hidden;
+  margin: 40px 0; position: relative;
+}
+.demo-launcher {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0a1628 0%, #0d2847 40%, #155e75 70%, #22d3ee 100%);
+  cursor: pointer; transition: opacity 0.3s;
+  gap: 16px;
+}
+.demo-launcher:hover { opacity: 0.9; }
+.demo-launcher-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(34, 211, 238, 0.2); border: 2px solid rgba(34, 211, 238, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; transition: transform 0.3s, background 0.3s;
+}
+.demo-launcher:hover .demo-launcher-icon {
+  transform: scale(1.1); background: rgba(34, 211, 238, 0.3);
+}
+.demo-launcher-text {
+  font-size: 16px; font-weight: 600; color: #fff;
+}
+.demo-launcher-sub {
+  font-size: 12px; color: rgba(255,255,255,0.5);
+}
+.demo-iframe {
+  width: 100%; height: 100%; border: none;
+}
+.demo-fullscreen-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 8px; font-size: 13px; color: var(--cyan);
+}
+
+/* ===== NEWSLETTER / CONTACT EXTRAS ===== */
+.contact-extras {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  max-width: 700px; margin: 48px auto 0;
+}
+.contact-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; text-align: left;
+}
+.contact-card h3 {
+  font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 12px;
+}
+.contact-card p {
+  font-size: 13px; color: var(--text-dim); line-height: 1.7; margin-bottom: 16px;
+}
+.contact-card .contact-link {
+  width: 100%; justify-content: center; box-sizing: border-box;
+}
+.messaging-links {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.messaging-links .contact-link {
+  width: 100%; justify-content: center; box-sizing: border-box;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .nav { padding: 0 16px; }
@@ -411,6 +523,8 @@ img { max-width: 100%; height: auto; display: block; }
   .project-tech-grid { grid-template-columns: 1fr; }
 
   .contact-links { flex-direction: column; align-items: center; }
+  .contact-extras { grid-template-columns: 1fr; }
+  .demo-container { aspect-ratio: 4/3; }
 }
 
 @media (max-width: 480px) {

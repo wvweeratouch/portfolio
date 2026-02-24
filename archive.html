@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive — Wave Pongruengkiat</title>
+<meta name="description" content="Complete project archive, 2014–2025. 50+ projects across exhibitions, performances, workshops, and installations.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Wave Pongruengkiat</a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Work</a>
+      <a href="archive.html" class="active">Archive</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="archive-hero">
+  <div class="container">
+    <div class="section-tag">Archive</div>
+    <h1 class="section-title">All projects, 2014&ndash;2025</h1>
+    <p class="archive-subtitle" id="archive-subtitle">Loading projects&hellip;</p>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="archive-filters" id="archive-filters">
+  <div class="archive-filters-inner">
+    <button class="filter-tab active" data-filter="all">All</button>
+  </div>
+</div>
+
+<!-- GRID -->
+<section class="section">
+  <div class="container">
+    <div class="archive-grid" id="archive-grid">
+      <div class="archive-loading" id="archive-loading">
+        <div class="archive-loading-spinner"></div>
+        <p>Fetching projects from Google Sheets&hellip;</p>
+      </div>
+    </div>
+
+    <div class="archive-error" id="archive-error" style="display:none;">
+      <p id="archive-error-msg">Could not load projects.</p>
+      <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">
+        If viewing locally, this page needs a web server.<br>
+        Push to GitHub Pages or run: <code style="color:var(--accent)">python -m http.server</code>
+      </p>
+      <a href="#" onclick="location.reload(); return false;" class="archive-retry">Retry &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <div class="container">
+    <h2 class="gradient-text">Let's make something together</h2>
+    <p>Start with a conversation. No commitment, just curiosity.</p>
+    <a href="contact.html" class="cta-btn">Get in touch &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <p>Wave Pongruengkiat &middot; Chiang Mai, Thailand &middot; 2026</p>
+  </div>
+</footer>
+
+<script>
+(function() {
+  var CSV_URL = 'https://docs.google.com/spreadsheets/d/1OpPXBFGI8v8u7fNN7ZChY0PNXhpKvT8ol6tFNYVpsu0/gviz/tq?tqx=out:csv&sheet=projects';
+
+  // Featured project mapping
+  var FEATURED = [
+    { match: 'ceing', href: 'projects/ceing.html' },
+    { match: 'khwan', href: 'projects/khwan-dance.html' },
+    { match: 'zer01ne', href: 'projects/zer0ne.html' },
+    { match: 'zer0ne', href: 'projects/zer0ne.html' },
+    { match: 'technobiological', href: 'projects/technobiological.html' },
+    { match: 'data mask', href: 'projects/data-mask.html' },
+    { match: 'posthuman', href: 'projects/data-mask.html' }
+  ];
+
+  // Color palette for gradient fallbacks
+  var PALETTE = [
+    ['#0a1628', '#0d2847', '#22d3ee'],
+    ['#1a0a1e', '#2d1035', '#f472b6'],
+    ['#1a1008', '#2d1d0a', '#fb923c'],
+    ['#0f0a1e', '#1a1035', '#a78bfa'],
+    ['#0a1428', '#0d2040', '#60a5fa'],
+    ['#0a1a10', '#0d2d18', '#4ade80'],
+    ['#1a1010', '#2d1a1a', '#f87171'],
+    ['#1a1508', '#2d260a', '#fbbf24']
+  ];
+
+  function hashStr(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  }
+
+  function parseCSV(text) {
+    var rows = [], row = [], field = '', inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (i + 1 < text.length && text[i + 1] === '"') { field += '"'; i++; }
+          else inQuotes = false;
+        } else field += c;
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ',') { row.push(field.trim()); field = ''; }
+        else if (c === '\n' || (c === '\r' && text[i + 1] === '\n')) {
+          row.push(field.trim()); field = '';
+          if (row.length > 1 || row[0] !== '') rows.push(row);
+          row = [];
+          if (c === '\r') i++;
+        } else field += c;
+      }
+    }
+    row.push(field.trim());
+    if (row.length > 1 || row[0] !== '') rows.push(row);
+    return rows;
+  }
+
+  function findCol(headers, patterns) {
+    for (var p = 0; p < patterns.length; p++) {
+      var pat = patterns[p].toLowerCase();
+      for (var i = 0; i < headers.length; i++) {
+        if (headers[i].toLowerCase().indexOf(pat) !== -1) return i;
+      }
+    }
+    return -1;
+  }
+
+  function driveToImage(url) {
+    if (!url) return '';
+    var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=s800';
+    if (url.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)/i)) return url;
+    return url;
+  }
+
+  function getFeaturedLink(title) {
+    var t = title.toLowerCase();
+    for (var i = 0; i < FEATURED.length; i++) {
+      if (t.indexOf(FEATURED[i].match) !== -1) return FEATURED[i].href;
+    }
+    return '';
+  }
+
+  function primaryCategory(type) {
+    if (!type) return '';
+    return type.split('/')[0].trim();
+  }
+
+  function gradientFor(title, type) {
+    var idx = hashStr(title + (type || '')) % PALETTE.length;
+    var c = PALETTE[idx];
+    return 'linear-gradient(135deg, ' + c[0] + ' 0%, ' + c[1] + ' 30%, ' + c[2] + ' 100%)';
+  }
+
+  function accentFor(title, type) {
+    return PALETTE[hashStr(title + (type || '')) % PALETTE.length][2];
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function renderCard(project) {
+    var link = getFeaturedLink(project.title);
+    var tag = link ? 'a' : 'div';
+    var hrefAttr = link ? ' href="' + escHtml(link) + '"' : '';
+    var imageUrl = driveToImage(project.image);
+    var accent = accentFor(project.title, project.type);
+
+    var visual;
+    if (imageUrl) {
+      visual = '<div class="archive-card-visual" style="background-image:url(\'' + escHtml(imageUrl) + '\')">' +
+               '<div class="archive-card-overlay"></div></div>';
+    } else {
+      visual = '<div class="archive-card-visual archive-card-gradient" style="background:' +
+               gradientFor(project.title, project.type) + '">' +
+               '<div class="archive-card-overlay"></div></div>';
+    }
+
+    var badge = '';
+    if (project.type) {
+      badge = '<span class="archive-card-badge" style="background:' + accent + '20;color:' + accent + '">' +
+              escHtml(project.type) + '</span>';
+    }
+
+    var location = [];
+    if (project.city) location.push(escHtml(project.city));
+    if (project.country) location.push(escHtml(project.country));
+    var meta = '';
+    if (project.venue || location.length) {
+      var parts = [];
+      if (project.venue) parts.push(escHtml(project.venue));
+      if (location.length) parts.push(location.join(', '));
+      meta = '<div class="archive-card-meta">' + parts.join(' &middot; ') + '</div>';
+    }
+
+    var featured = link ? '<span class="archive-card-featured">View project &rarr;</span>' : '';
+
+    return '<' + tag + ' class="archive-card"' + hrefAttr + '>' +
+           visual +
+           '<div class="archive-card-body">' +
+           '<div class="archive-card-year">' + escHtml(project.year || '') + '</div>' +
+           '<h3 class="archive-card-title">' + escHtml(project.title) + '</h3>' +
+           badge + meta + featured +
+           '</div></' + tag + '>';
+  }
+
+  function init() {
+    var grid = document.getElementById('archive-grid');
+    var loading = document.getElementById('archive-loading');
+    var errorEl = document.getElementById('archive-error');
+    var subtitle = document.getElementById('archive-subtitle');
+    var filtersInner = document.querySelector('.archive-filters-inner');
+
+    fetch(CSV_URL)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(text) {
+        var rows = parseCSV(text);
+        if (rows.length < 2) throw new Error('No data rows');
+
+        var headers = rows[0];
+
+        // Map columns by actual sheet headers
+        var colYear     = findCol(headers, ['year']);
+        var colTitle    = findCol(headers, ['title', 'project name', 'name']);
+        var colVenue    = findCol(headers, ['platform', 'event', 'festival', 'venue']);
+        var colCity     = findCol(headers, ['city']);
+        var colCountry  = findCol(headers, ['country']);
+        var colType     = findCol(headers, ['type of work', 'type']);
+        var colImage    = findCol(headers, ['image url', 'image', 'thumbnail']);
+
+        if (colTitle === -1) colTitle = 4; // fallback: Title is typically col 4
+
+        var projects = [];
+        var categories = {};
+        var countries = {};
+
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          var title = r[colTitle] || '';
+          if (!title) continue;
+
+          var type    = (colType >= 0 ? r[colType] : '') || '';
+          var year    = (colYear >= 0 ? r[colYear] : '') || '';
+          var venue   = (colVenue >= 0 ? r[colVenue] : '') || '';
+          var city    = (colCity >= 0 ? r[colCity] : '') || '';
+          var country = (colCountry >= 0 ? r[colCountry] : '') || '';
+          var image   = (colImage >= 0 ? r[colImage] : '') || '';
+
+          projects.push({
+            title: title, year: year, type: type,
+            venue: venue, city: city, country: country, image: image
+          });
+
+          var cat = primaryCategory(type);
+          if (cat) categories[cat] = (categories[cat] || 0) + 1;
+          if (country) countries[country.trim()] = true;
+        }
+
+        // Sort newest first
+        projects.sort(function(a, b) {
+          return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
+        });
+
+        // Subtitle
+        var countryCount = Object.keys(countries).length;
+        subtitle.textContent = projects.length + ' projects' +
+          (countryCount > 0 ? ' across ' + countryCount + ' countries' : '');
+
+        // Filter tabs
+        var sortedCats = Object.keys(categories).sort(function(a, b) {
+          return categories[b] - categories[a];
+        });
+        // Update "All" tab count
+        filtersInner.querySelector('.filter-tab').textContent = 'All (' + projects.length + ')';
+
+        for (var c = 0; c < sortedCats.length; c++) {
+          var btn = document.createElement('button');
+          btn.className = 'filter-tab';
+          btn.setAttribute('data-filter', sortedCats[c]);
+          btn.textContent = sortedCats[c] + ' (' + categories[sortedCats[c]] + ')';
+          filtersInner.appendChild(btn);
+        }
+
+        // Render
+        loading.style.display = 'none';
+        var html = '';
+        for (var j = 0; j < projects.length; j++) html += renderCard(projects[j]);
+        grid.innerHTML = html;
+
+        // Filter handler
+        filtersInner.addEventListener('click', function(e) {
+          if (!e.target.classList.contains('filter-tab')) return;
+          var filter = e.target.getAttribute('data-filter');
+          var tabs = filtersInner.querySelectorAll('.filter-tab');
+          for (var t = 0; t < tabs.length; t++) tabs[t].classList.remove('active');
+          e.target.classList.add('active');
+
+          var filtered = filter === 'all'
+            ? projects
+            : projects.filter(function(p) { return primaryCategory(p.type) === filter; });
+
+          var h = '';
+          for (var k = 0; k < filtered.length; k++) h += renderCard(filtered[k]);
+          grid.innerHTML = h;
+        });
+      })
+      .catch(function(err) {
+        console.error('Archive fetch error:', err);
+        loading.style.display = 'none';
+        errorEl.style.display = 'block';
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>

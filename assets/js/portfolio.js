@@ -92,6 +92,15 @@ var Portfolio = (function() {
       .replace(/^-|-$/g, '');
   }
 
+  function matchKnownSlug(title) {
+    if (!title) return '';
+    var t = title.toLowerCase();
+    for (var i = 0; i < KNOWN_WORKS.length; i++) {
+      if (t.indexOf(KNOWN_WORKS[i].match) !== -1) return KNOWN_WORKS[i].slug;
+    }
+    return '';
+  }
+
   function isTruthy(val) {
     if (!val) return false;
     var v = val.toLowerCase().trim();
@@ -188,20 +197,30 @@ var Portfolio = (function() {
 
   function normalizeWork(obj) {
     var title = obj.title || obj.project_name || obj.name || '';
-    var slug = obj.slug || toSlug(title);
+    var slug = obj.slug || matchKnownSlug(title) || toSlug(title);
     var type = obj.type || obj.type_of_work || '';
+
+    // Find venue from various possible column names
+    var venue = obj.venue || obj.platform_event_venue || obj.platform || obj.event || '';
+    if (!venue) {
+      // Handle long column names like "Platform/Event/Festival/Group exh."
+      for (var k in obj) {
+        if (k.indexOf('platform') === 0 && obj[k]) { venue = obj[k]; break; }
+      }
+    }
+
     return {
       slug: slug,
       title: title,
       year: obj.year || '',
       type: type,
       medium: obj.medium || obj.tech || '',
-      description: obj.description || '',
+      description: obj.description || obj.brief_description || '',
       statement: obj.statement || '',
-      venue: obj.venue || obj.platform_event_venue || obj.platform || obj.event || '',
+      venue: venue,
       city: obj.city || '',
       country: obj.country || '',
-      collaborators: obj.collaborators || '',
+      collaborators: obj.collaborators || obj.collaborator || '',
       featured: isTruthy(obj.featured || obj.highlight || ''),
       featured_order: parseInt(obj.featured_order) || 999,
       thumb: resolveImage(slug, obj.thumb || '') || driveToImage(obj.image_url || obj.image || obj.thumbnail || ''),

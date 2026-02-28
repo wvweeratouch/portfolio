@@ -645,3 +645,63 @@ a.archive-card { cursor: pointer; }
 @media (max-width: 480px) {
   .archive-grid { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* ===== WORK TEMPLATE PAGE ===== */
+.work-loading {
+  text-align: center; padding: 200px 24px 80px;
+  color: var(--text-dim); font-size: 13px; font-weight: 300;
+}
+.work-404 {
+  text-align: center; padding: 200px 24px 80px;
+  color: var(--text-dim);
+}
+
+/* ===== CV PAGE ===== */
+.cv-hero {
+  padding: 140px 0 48px;
+}
+.cv-subtitle {
+  font-size: 14px; color: var(--text-dim); margin-top: 8px; font-weight: 300;
+  letter-spacing: 0.5px;
+}
+.cv-sections { max-width: 800px; }
+.cv-section { margin-bottom: var(--space-xl); }
+.cv-section-title {
+  font-size: 11px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: var(--space-md);
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.cv-item {
+  display: grid; grid-template-columns: 80px 1fr;
+  gap: 16px; padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cv-item:last-child { border-bottom: none; }
+.cv-year {
+  font-size: 13px; font-weight: 400; color: var(--text-muted);
+  padding-top: 2px;
+}
+.cv-title { font-size: 14px; font-weight: 400; margin-bottom: 2px; }
+.cv-meta { font-size: 13px; color: var(--text-dim); font-weight: 300; }
+.cv-details { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 4px; }
+
+@media (max-width: 768px) {
+  .cv-hero { padding: 120px 0 36px; }
+  .cv-item { grid-template-columns: 60px 1fr; gap: 12px; }
+}
+
+/* ===== CV PRINT ===== */
+@media print {
+  .nav, .footer { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .cv-hero { padding: 48px 0 24px; }
+  .section-tag { color: #999; }
+  .section-title { color: #000; }
+  .cv-subtitle { color: #666; }
+  .cv-section-title { color: #666; border-color: #ddd; }
+  .cv-title { color: #000; }
+  .cv-meta { color: #666; }
+  .cv-year { color: #999; }
+  .cv-details { color: #666; }
+  .cv-item { border-color: #eee; }
+}

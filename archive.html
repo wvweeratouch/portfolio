@@ -6,6 +6,7 @@
 <title>Archive — Wave Pongruengkiat</title>
 <meta name="description" content="Complete project archive, 2014–2025. 50+ projects across exhibitions, performances, workshops, and installations.">
 <link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/portfolio.js"></script>
 </head>
 <body>
 
@@ -17,6 +18,7 @@
     <div class="nav-links">
       <a href="index.html">Work</a>
       <a href="archive.html" class="active">Archive</a>
+      <a href="cv.html">CV</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -74,148 +76,47 @@
 
 <script>
 (function() {
-  var CSV_URL = 'https://docs.google.com/spreadsheets/d/1OpPXBFGI8v8u7fNN7ZChY0PNXhpKvT8ol6tFNYVpsu0/gviz/tq?tqx=out:csv&sheet=projects';
-
-  // Featured project mapping
-  var FEATURED = [
-    { match: 'ceing', href: 'projects/ceing.html' },
-    { match: 'khwan', href: 'projects/khwan-dance.html' },
-    { match: 'zer01ne', href: 'projects/zer0ne.html' },
-    { match: 'zer0ne', href: 'projects/zer0ne.html' },
-    { match: 'technobiological', href: 'projects/technobiological.html' },
-    { match: 'data mask', href: 'projects/data-mask.html' },
-    { match: 'posthuman', href: 'projects/data-mask.html' }
-  ];
-
-  // Color palette for gradient fallbacks
-  var PALETTE = [
-    ['#0a1628', '#0d2847', '#22d3ee'],
-    ['#1a0a1e', '#2d1035', '#f472b6'],
-    ['#1a1008', '#2d1d0a', '#fb923c'],
-    ['#0f0a1e', '#1a1035', '#a78bfa'],
-    ['#0a1428', '#0d2040', '#60a5fa'],
-    ['#0a1a10', '#0d2d18', '#4ade80'],
-    ['#1a1010', '#2d1a1a', '#f87171'],
-    ['#1a1508', '#2d260a', '#fbbf24']
-  ];
-
-  function hashStr(s) {
-    var h = 0;
-    for (var i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-    return Math.abs(h);
-  }
-
-  function parseCSV(text) {
-    var rows = [], row = [], field = '', inQuotes = false;
-    for (var i = 0; i < text.length; i++) {
-      var c = text[i];
-      if (inQuotes) {
-        if (c === '"') {
-          if (i + 1 < text.length && text[i + 1] === '"') { field += '"'; i++; }
-          else inQuotes = false;
-        } else field += c;
-      } else {
-        if (c === '"') inQuotes = true;
-        else if (c === ',') { row.push(field.trim()); field = ''; }
-        else if (c === '\n' || (c === '\r' && text[i + 1] === '\n')) {
-          row.push(field.trim()); field = '';
-          if (row.length > 1 || row[0] !== '') rows.push(row);
-          row = [];
-          if (c === '\r') i++;
-        } else field += c;
-      }
-    }
-    row.push(field.trim());
-    if (row.length > 1 || row[0] !== '') rows.push(row);
-    return rows;
-  }
-
-  function findCol(headers, patterns) {
-    for (var p = 0; p < patterns.length; p++) {
-      var pat = patterns[p].toLowerCase();
-      for (var i = 0; i < headers.length; i++) {
-        if (headers[i].toLowerCase().indexOf(pat) !== -1) return i;
-      }
-    }
-    return -1;
-  }
-
-  function driveToImage(url) {
-    if (!url) return '';
-    var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (m) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=s800';
-    if (url.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)/i)) return url;
-    return url;
-  }
-
-  function getFeaturedLink(title) {
-    var t = title.toLowerCase();
-    for (var i = 0; i < FEATURED.length; i++) {
-      if (t.indexOf(FEATURED[i].match) !== -1) return FEATURED[i].href;
-    }
-    return '';
-  }
-
-  function primaryCategory(type) {
-    if (!type) return '';
-    return type.split('/')[0].trim();
-  }
-
-  function gradientFor(title, type) {
-    var idx = hashStr(title + (type || '')) % PALETTE.length;
-    var c = PALETTE[idx];
-    return 'linear-gradient(135deg, ' + c[0] + ' 0%, ' + c[1] + ' 30%, ' + c[2] + ' 100%)';
-  }
-
-  function accentFor(title, type) {
-    return PALETTE[hashStr(title + (type || '')) % PALETTE.length][2];
-  }
-
-  function escHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function renderCard(project) {
-    var link = getFeaturedLink(project.title);
-    var tag = link ? 'a' : 'div';
-    var hrefAttr = link ? ' href="' + escHtml(link) + '"' : '';
-    var imageUrl = driveToImage(project.image);
-    var accent = accentFor(project.title, project.type);
+  function renderCard(work) {
+    var hasPage = Portfolio.hasDetailPage(work);
+    var tag = hasPage ? 'a' : 'div';
+    var hrefAttr = hasPage ? ' href="' + Portfolio.workUrl(work) + '"' : '';
+    var E = Portfolio.escHtml;
+    var accent = Portfolio.accentFor(work.title, work.type);
 
     var visual;
-    if (imageUrl) {
-      visual = '<div class="archive-card-visual" style="background-image:url(\'' + escHtml(imageUrl) + '\')">' +
+    if (work.thumb) {
+      visual = '<div class="archive-card-visual" style="background-image:url(\'' + E(work.thumb) + '\')">' +
                '<div class="archive-card-overlay"></div></div>';
     } else {
       visual = '<div class="archive-card-visual archive-card-gradient" style="background:' +
-               gradientFor(project.title, project.type) + '">' +
+               Portfolio.gradientFor(work.title, work.type) + '">' +
                '<div class="archive-card-overlay"></div></div>';
     }
 
     var badge = '';
-    if (project.type) {
+    if (work.type) {
       badge = '<span class="archive-card-badge" style="background:' + accent + '15;color:' + accent + '">' +
-              escHtml(project.type) + '</span>';
+              E(work.type) + '</span>';
     }
 
     var location = [];
-    if (project.city) location.push(escHtml(project.city));
-    if (project.country) location.push(escHtml(project.country));
+    if (work.city) location.push(E(work.city));
+    if (work.country) location.push(E(work.country));
     var meta = '';
-    if (project.venue || location.length) {
+    if (work.venue || location.length) {
       var parts = [];
-      if (project.venue) parts.push(escHtml(project.venue));
+      if (work.venue) parts.push(E(work.venue));
       if (location.length) parts.push(location.join(', '));
       meta = '<div class="archive-card-meta">' + parts.join(' &middot; ') + '</div>';
     }
 
-    var featured = link ? '<span class="archive-card-featured">View project &rarr;</span>' : '';
+    var featured = hasPage ? '<span class="archive-card-featured">View project &rarr;</span>' : '';
 
     return '<' + tag + ' class="archive-card"' + hrefAttr + '>' +
            visual +
            '<div class="archive-card-body">' +
-           '<div class="archive-card-year">' + escHtml(project.year || '') + '</div>' +
-           '<h3 class="archive-card-title">' + escHtml(project.title) + '</h3>' +
+           '<div class="archive-card-year">' + E(work.year) + '</div>' +
+           '<h3 class="archive-card-title">' + E(work.title) + '</h3>' +
            badge + meta + featured +
            '</div></' + tag + '>';
   }
@@ -227,65 +128,34 @@
     var subtitle = document.getElementById('archive-subtitle');
     var filtersInner = document.querySelector('.archive-filters-inner');
 
-    fetch(CSV_URL)
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.text();
-      })
-      .then(function(text) {
-        var rows = parseCSV(text);
-        if (rows.length < 2) throw new Error('No data rows');
-
-        var headers = rows[0];
-
-        var colYear     = findCol(headers, ['year']);
-        var colTitle    = findCol(headers, ['title', 'project name', 'name']);
-        var colVenue    = findCol(headers, ['platform', 'event', 'festival', 'venue']);
-        var colCity     = findCol(headers, ['city']);
-        var colCountry  = findCol(headers, ['country']);
-        var colType     = findCol(headers, ['type of work', 'type']);
-        var colImage    = findCol(headers, ['image url', 'image', 'thumbnail']);
-
-        if (colTitle === -1) colTitle = 4;
-
-        var projects = [];
+    Portfolio.fetchWorks()
+      .then(function(result) {
+        var works = [];
         var categories = {};
         var countries = {};
 
-        for (var i = 1; i < rows.length; i++) {
-          var r = rows[i];
-          var title = r[colTitle] || '';
-          if (!title) continue;
+        for (var i = 0; i < result.data.length; i++) {
+          var work = Portfolio.normalizeWork(result.data[i]);
+          if (!work.title || work.status === 'draft') continue;
+          works.push(work);
 
-          var type    = (colType >= 0 ? r[colType] : '') || '';
-          var year    = (colYear >= 0 ? r[colYear] : '') || '';
-          var venue   = (colVenue >= 0 ? r[colVenue] : '') || '';
-          var city    = (colCity >= 0 ? r[colCity] : '') || '';
-          var country = (colCountry >= 0 ? r[colCountry] : '') || '';
-          var image   = (colImage >= 0 ? r[colImage] : '') || '';
-
-          projects.push({
-            title: title, year: year, type: type,
-            venue: venue, city: city, country: country, image: image
-          });
-
-          var cat = primaryCategory(type);
+          var cat = Portfolio.primaryCategory(work.type);
           if (cat) categories[cat] = (categories[cat] || 0) + 1;
-          if (country) countries[country.trim()] = true;
+          if (work.country) countries[work.country.trim()] = true;
         }
 
-        projects.sort(function(a, b) {
+        works.sort(function(a, b) {
           return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
         });
 
         var countryCount = Object.keys(countries).length;
-        subtitle.textContent = projects.length + ' projects' +
+        subtitle.textContent = works.length + ' projects' +
           (countryCount > 0 ? ' across ' + countryCount + ' countries' : '');
 
         var sortedCats = Object.keys(categories).sort(function(a, b) {
           return categories[b] - categories[a];
         });
-        filtersInner.querySelector('.filter-tab').textContent = 'All (' + projects.length + ')';
+        filtersInner.querySelector('.filter-tab').textContent = 'All (' + works.length + ')';
 
         for (var c = 0; c < sortedCats.length; c++) {
           var btn = document.createElement('button');
@@ -297,7 +167,7 @@
 
         loading.style.display = 'none';
         var html = '';
-        for (var j = 0; j < projects.length; j++) html += renderCard(projects[j]);
+        for (var j = 0; j < works.length; j++) html += renderCard(works[j]);
         grid.innerHTML = html;
 
         filtersInner.addEventListener('click', function(e) {
@@ -308,8 +178,8 @@
           e.target.classList.add('active');
 
           var filtered = filter === 'all'
-            ? projects
-            : projects.filter(function(p) { return primaryCategory(p.type) === filter; });
+            ? works
+            : works.filter(function(w) { return Portfolio.primaryCategory(w.type) === filter; });
 
           var h = '';
           for (var k = 0; k < filtered.length; k++) h += renderCard(filtered[k]);

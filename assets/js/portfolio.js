@@ -188,9 +188,30 @@ var Portfolio = (function() {
   }
 
   function fetchWorks() {
-    return fetchSheet('works').catch(function() {
-      return fetchSheet('projects');
+    // Try synced JSON first (fast), fall back to live Google Sheets
+    return fetch('assets/data/portfolio.json').then(function(r) {
+      if (!r.ok) throw new Error('No local data');
+      return r.json();
+    }).then(function(json) {
+      // Convert synced format to match fetchSheet format
+      var data = json.works || [];
+      _cache['_synced'] = json;
+      return { headers: Object.keys(data[0] || {}), data: data };
+    }).catch(function() {
+      // Fall back to live Google Sheets
+      return fetchSheet('works').catch(function() {
+        return fetchSheet('projects');
+      });
     });
+  }
+
+  function fetchCV() {
+    // Try synced JSON first
+    var synced = _cache['_synced'];
+    if (synced && synced.cv && synced.cv.length) {
+      return Promise.resolve({ headers: Object.keys(synced.cv[0] || {}), data: synced.cv });
+    }
+    return fetchSheet('cv');
   }
 
   // === Work Normalization ===
@@ -259,6 +280,7 @@ var Portfolio = (function() {
     KNOWN_WORKS: KNOWN_WORKS,
     fetchSheet: fetchSheet,
     fetchWorks: fetchWorks,
+    fetchCV: fetchCV,
     parseCSV: parseCSV,
     findCol: findCol,
     hashStr: hashStr,
